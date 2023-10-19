@@ -7,6 +7,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.*;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -16,7 +21,10 @@ import java.util.Arrays;
 public class CompanyRegisterApplication implements WebMvcConfigurer{
 
 	public static void main(String[] args) {
+		SpringApplication.run(CompanyRegisterApplication.class, args);
+	}
 
+    private String generateSecretKey(){
         // Generate 32 random bytes (256 bits)
         byte[] randomBytes = new byte[32];
         new SecureRandom().nextBytes(randomBytes);
@@ -26,10 +34,8 @@ public class CompanyRegisterApplication implements WebMvcConfigurer{
 
         // Convert BigInteger to hexadecimal string
         String hexKey = bigInt.toString(16);
-
-        System.out.println(hexKey);
-		SpringApplication.run(CompanyRegisterApplication.class, args);
-	}
+        return  hexKey;
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -43,37 +49,38 @@ public class CompanyRegisterApplication implements WebMvcConfigurer{
 
     /*@Bean
     public CorsFilter corsFilter() {
-        System.out.println("COORS");
+
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:8443"));
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
 
         return new CorsFilter(source);
-    }
-    @Bean
+    }*/
+   @Bean
     public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:8443","https://apidev2.codevirtus.com","https://apidev2.codevirtus.com:8443")
+                        .allowedOrigins("http://localhost:4200","https://qodestudiopublic.web.app")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
 
-            @Override
+            /*@Override
             public void addInterceptors(InterceptorRegistry registry) {
                 registry.addInterceptor(new ApiTokenFilter());
-            }
+            }*/
         };
     }
 
-    @Bean
+    /*@Bean
     public SecurityFilterChain securityFilter(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         return http.build();

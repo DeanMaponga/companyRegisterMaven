@@ -25,32 +25,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain filterChain)
-            throws ServletException, IOException {
-      final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-      final String jwt;
-      final String userEmail;
-      if(authHeader==null|| !authHeader.startsWith("Bearer ")){
-        filterChain.doFilter(request, response);
-        return;
-      }
-      jwt = authHeader.substring(7);
-      userEmail = jwtService.extractUsername(jwt);
-      if(userEmail!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-        if(jwtService.isTokenValid(jwt, userDetails)){
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-            );
-            authToken.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+    protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain filterChain) throws ServletException, IOException {
+        try {
+            final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            final String jwt;
+            final String userEmail;
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                System.out.println(request.getRequestURI());
+                if (request.getRequestURI().contains("/api/v1/auth")) {
+                    filterChain.doFilter(request, response);
+                }
+                else if(request.getRequestURI().contains("/v3/api-docs")){
+                    filterChain.doFilter(request, response);
+                }
+                else if (request.getRequestURI().contains("/api")) {
+                    response.sendError(403);
+                } else {
+                    filterChain.doFilter(request, response);
+                }
+                return;
+            }
+            jwt = authHeader.substring(7);
+            userEmail = jwtService.extractUsername(jwt);
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+                filterChain.doFilter(request, response);
+            } else if (userEmail != null) {
+                filterChain.doFilter(request, response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        filterChain.doFilter(request, response);
-      }
     }
-    
 }

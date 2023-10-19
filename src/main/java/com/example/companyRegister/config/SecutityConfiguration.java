@@ -43,7 +43,7 @@ public class SecutityConfiguration {
         .and()
         .authenticationProvider(authenticationProvider)
         .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);*/
-        RequestMatcher apiPaths = new AntPathRequestMatcher("/api/**");
+
         /*http.authorizeRequests()
                 .requestMatchers(apiPaths)
                 .authenticated()
@@ -52,10 +52,43 @@ public class SecutityConfiguration {
                 .and()
                 .csrf().disable();*/
 
+        /*RequestMatcher apiPaths = new AntPathRequestMatcher("/api/**");
         http.cors().and()
                 .csrf().disable()
                 .authorizeRequests()
                 .anyRequest().permitAll();
+
+        return http.build();
+
+        RequestMatcher whiteList = new OrRequestMatcher(
+                PathRequest.toStaticResources().atCommonLocations(),
+                new AntPathRequestMatcher("/api/v1/auth/**")
+        );*/
+
+        //WORKING CODE
+        /*
+        http.cors().and()
+                .csrf().disable()
+                .formLogin().disable()
+                .securityMatcher("/api/**")
+                .authorizeHttpRequests(registry->
+                        registry
+                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers("/api/v1/**").permitAll()
+                                .anyRequest().authenticated());*/
+        System.out.println(whiteList);
+        http.cors().and()
+                .csrf().disable()
+                .formLogin().disable()
+                .authorizeHttpRequests(registry->
+                        registry
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                .requestMatchers("/api/**").authenticated()
+                                .anyRequest().permitAll()
+                                .and()
+                                .authenticationProvider(authenticationProvider)
+                                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
+                );
 
         return http.build();
      }
