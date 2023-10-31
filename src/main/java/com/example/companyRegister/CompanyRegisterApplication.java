@@ -3,19 +3,13 @@ package com.example.companyRegister;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.*;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 @SpringBootApplication
 public class CompanyRegisterApplication implements WebMvcConfigurer{
@@ -67,7 +61,9 @@ public class CompanyRegisterApplication implements WebMvcConfigurer{
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200","https://qodestudiopublic.web.app")
+                        //.allowedOrigins("http://localhost:4200","https://localhost:8443","https://apidev2.codevirtus.com","https://apidev2.codevirtus.com:8443","https://apidev2.codevirtus.com:8443/","https://qodestudiopublic.web.app")
+                        .allowedOrigins("https://apidev2.codevirtus.com:8443")
+                        .allowedOriginPatterns("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true);

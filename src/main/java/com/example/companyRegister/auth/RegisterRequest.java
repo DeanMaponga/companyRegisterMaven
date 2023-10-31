@@ -1,7 +1,6 @@
 package com.example.companyRegister.auth;
 
-import org.apache.catalina.Role;
-
+import com.example.companyRegister.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

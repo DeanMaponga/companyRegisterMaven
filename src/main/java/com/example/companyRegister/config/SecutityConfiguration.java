@@ -76,7 +76,7 @@ public class SecutityConfiguration {
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/api/v1/**").permitAll()
                                 .anyRequest().authenticated());*/
-        System.out.println(whiteList);
+
         http.cors().and()
                 .csrf().disable()
                 .formLogin().disable()
